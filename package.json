@@ -4,7 +4,8 @@
   "description": "build a multiservice system",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js --exec babel-node"
+    "start": "nodemon src/index.js --exec babel-node",
+    "limit": "cross-env LIMIT=2048 increase-memory-limit"
   },
   "author": "Alfredo Rodriguez G.",
   "license": "MIT",
@@ -20,16 +21,14 @@
     "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",
     "express-session": "^1.17.0",
+    "jsonwebtoken": "^8.5.1",
     "merge-graphql-schemas": "^1.7.3",
-    "mongodb": "^3.4.0",
     "mongoose": "^5.8.1",
     "nodemon": "^2.0.2",
-    "pg": "^7.14.0",
-    "pg-hstore": "^2.3.3",
-    "sequelize": "^5.21.3"
+    "redis": "^2.8.0"
   },
   "dependencies": {
-    "apollo-server-express": "^2.9.13",
+    "apollo-server-express": "^2.9.14",
     "express": "^4.17.1",
     "graphql": "^14.5.8",
     "helmet": "^3.21.2"
