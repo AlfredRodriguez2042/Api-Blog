@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser'
 import { schema } from './graphql/index'
 import { Connect } from './database'
 import { config } from 'dotenv'
-import { authMiddleware } from './middleware/auth'
+import { authMiddleware, middlewareSession } from './middleware/auth'
 
 config()
 Connect()
@@ -24,6 +24,7 @@ const store = new RedisStore({ client })
 
 app.use(
   session({
+    name: 'qid',
     store,
     secret: process.env.JWT_SECRET,
     resave: false,
@@ -36,8 +37,8 @@ app.use(
 )
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-//app.use(path, authMiddleware)
-app.use(cookieParser())
+app.use(path, middlewareSession)
+app.use(cookieParser(process.env.JWT_SECRET))
 
 export const apolloServer = new ApolloServer({
   schema,

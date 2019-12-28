@@ -8,9 +8,10 @@ export default {
       if (!user) {
         throw new Error('invalid email/password, try again')
       }
-      req.session.key = user._id
+      req.session.userId = user._id
       const token = 'asdasdsa'
-      console.log(req.session)
+      console.log(req)
+      console.log(req.session.userId)
       return { user, token }
     }
   }

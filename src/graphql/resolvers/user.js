@@ -1,4 +1,6 @@
 import User from '../../models/user'
+import { checkAdmin, checkAuth } from '../../utils/auth'
+import { validationUser } from '../../utils/validation'
 
 export default {
   Query: {
@@ -9,7 +11,8 @@ export default {
       }
       return user
     },
-    Users: async () => {
+    Users: async (_, __, { request: { req } }) => {
+      checkAdmin(req)
       const users = await User.find({})
       //.populate('posts')
       // .populate('comments')
@@ -19,10 +22,16 @@ export default {
   },
   Mutation: {
     createUser: async (_, { input }) => {
+      const { error } = validationUser(input)
+      if (error) {
+        throw new Error(`${error.message}`)
+      }
       const user = await User.create(input)
       return user
     },
-    deleteUser: async (_, { _id }) => {
+    deleteUser: async (_, { _id }, { request: { req } }) => {
+      checkAuth(req)
+      // checkAdmin(req)
       const user = await User.findById(_id)
       await user.remove()
       return user

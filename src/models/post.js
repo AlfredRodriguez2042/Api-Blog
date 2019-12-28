@@ -30,7 +30,7 @@ postSchema.pre('remove', async function(next) {
   try {
     await Comment.deleteMany({ _id: { $in: this.comment } })
     await Tags.deleteMany({ _id: { $in: this.tags } })
-    console.log('postschema... ')
+    console.log('cascade delete ')
     next()
   } catch (error) {
     next(error)

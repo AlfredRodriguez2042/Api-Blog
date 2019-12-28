@@ -1,9 +1,10 @@
 import Comment from '../../models/comments'
 import Post from '../../models/post'
-
+import { checkAuth } from '../../utils/auth'
 export default {
   Query: {
     Comments: async () => {
+      //checkAuth(req)
       const come = await Comment.find()
       console.log(come)
       return come
@@ -11,13 +12,13 @@ export default {
   },
   Mutation: {
     createComment: async (_, { postId, input }, { request: { req } }) => {
+      checkAuth(req)
       const { body } = input
-      const user = '5e005f1985f7dd6922a39a8a'
 
       const post = await Post.findById(postId)
       const comment = await Comment.create({
         body,
-        author: user,
+        author: req.session.userId,
         post: postId
       })
 
@@ -26,22 +27,30 @@ export default {
 
       return comment
     },
-    deleteComment: async (_, { _id }) => {
-      const comment = await Comment.findByIdAndDelete(_id)
+    deleteComment: async (_, { _id }, { request: { req } }) => {
+      checkAuth(req)
+      const comment = await Comment.findOneAndDelete({
+        _id,
+        author: req.session.userId
+      })
       return comment
     },
-    likePost: async (_, { id }) => {
-      const author = '5e005f1985f7dd6922a39a8a'
+    likePost: async (_, { id }, { request: { req } }) => {
+      checkAuth(req)
       const post = await Post.findById({ _id: id })
 
-      if (post.likes.find(like => like._id.toString() === author.toString())) {
+      if (
+        post.likes.find(
+          like => like._id.toString() === req.session.userId.toString()
+        )
+      ) {
         console.log('toggle like')
         post.likes = post.likes.filter(
-          like => like._id.toString() !== author.toString()
+          like => like._id.toString() !== req.session.userId.toString()
         )
       } else {
         console.log('make like')
-        post.likes.push(author)
+        post.likes.push(req.session.userId)
       }
       await post.save()
       return post

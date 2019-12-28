@@ -32,3 +32,28 @@ export async function authMiddleware(req, res, next) {
     return next(error)
   }
 }
+
+export const middlewareSession = async (req, res, next) => {
+  try {
+    const IsAuthorization = req.session
+    if (!IsAuthorization) {
+      console.log('no hay session')
+      req.isAuth = false
+      return next()
+    }
+    const user = await User.findById(req.session.userId)
+    if (!user) {
+      console.log('no hay user')
+      req.isAuth = false
+      return next()
+    }
+    console.log('paso')
+    const { privilege } = user
+
+    req.isAuth = true
+    req.user = { privilege }
+    next()
+  } catch (error) {
+    next(error)
+  }
+}

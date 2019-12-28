@@ -1,6 +1,8 @@
 import Post from '../../models/post'
 import Tag from '../../models/tag'
 import User from '../../models/user'
+import { checkAuth, checkAdmin } from '../../utils/auth'
+import { validationPost } from '../../utils/validation'
 
 export default {
   Query: {
@@ -9,14 +11,19 @@ export default {
       return post
     },
     Posts: async () => {
-      const posts = await Post.find()
+      const posts = await Post.find().sort({ createdAt: -1 })
       return posts
     }
   },
   Mutation: {
-    createPost: async (_, { input }) => {
-      const user = '5e005f1985f7dd6922a39a8a'
+    createPost: async (_, { input }, { request: { req } }) => {
+      checkAuth(req)
       const { title, slug, body, author, tags } = input
+      const { error } = validationPost({ title, slug, body, author, tags })
+      if (error) {
+        throw new Error(`${error.message}`)
+      }
+
       const tag = await Tag.create(tags)
       const post = await Post.create({
         title,
@@ -32,12 +39,17 @@ export default {
       return post
     },
     deletePost: async (_, { _id }, { request: { req, res } }) => {
+      checkAuth(req)
       const post = await Post.findById({ _id })
-
+      if (!post.author === req.session.userId) {
+        console.log('no es mi post')
+      }
       await post.remove()
       return post
     },
     deletePosts: async (_, { _id }, { request: { req, res } }) => {
+      checkAuth(req)
+      checkAdmin(req)
       const post = await Post.findById({ _id })
       await post.remove()
       return post
