@@ -8,11 +8,11 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: true,
-    validate: {
-      // eslint-disable-next-line
-      validator: username => User.doesntExist({ username }),
-      message: ({ value }) => `UserName ${value} has already been taken.`
-    },
+    // validate: {
+    //   // eslint-disable-next-line
+    //   validator: username => User.doesntExist({ username }),
+    //   message: ({ value }) => `UserName ${value} has already been taken.`
+    // },
     unique: [true, 'An account already exists with this username'],
     min: 4,
     max: 12
@@ -22,11 +22,11 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true,
-    validate: {
-      // eslint-disable-next-line
-      validator: email => User.doesntExist({ email }),
-      message: ({ value }) => `Email ${value} has already been taken.`
-    },
+    // validate: {
+    //   // eslint-disable-next-line
+    //   validator: email => User.doesntExist({ email }),
+    //   message: ({ value }) => `Email ${value} has already been taken.`
+    // },
     unique: [true, 'An account already exists with this email']
   },
   privilege: { type: String, default: 'regular', enum: ['regular', 'admin'] },
@@ -55,7 +55,7 @@ userSchema.statics.doesntExist = async function validate(op) {
 //   foreignField: 'author'
 // })
 
-userSchema.pre('save', passwordEncrypt)
+//userSchema.pre('save', passwordEncrypt)
 
 userSchema.pre(/^find/, function(next) {
   this.populate({ path: 'comments' })

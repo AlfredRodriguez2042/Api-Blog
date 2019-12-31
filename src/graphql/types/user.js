@@ -2,6 +2,7 @@ export default `
   type Query {
     User(_id:ID):User!
     Users:[User!]
+    Profile:User!
   }
 
   type User {
@@ -21,10 +22,12 @@ export default `
     _id: ID!
     username: String!
     thumbnail: String
+    active: Boolean
   }
 
   type AuthPayload {
-    token: String!
+    token: String
+    user: UserShort
   }
 
   type Mutation {

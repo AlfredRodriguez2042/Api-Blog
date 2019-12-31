@@ -15,7 +15,9 @@ export default `
     image: String!
     createdAt: String!
     comment:[Comment!]
+    commentNum: Int
     likes:[Likes!]
+    likesNum: Int
     tags:[Tag!]
   }
 

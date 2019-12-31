@@ -51,3 +51,10 @@ export const validationPost = post => {
   })
   return schema.validate(post)
 }
+
+export const verify = (value, error) => {
+  if (value)
+    throw new Error(
+      ` User validation failed: " ${error} " has already been taken`
+    )
+}
