@@ -14,7 +14,6 @@ export default {
     },
     Users: async (_, __, { request: { req } }) => {
       // checkAdmin(req)
-
       const users = await User.find({})
       //.populate('posts')
       // .populate('comments')
@@ -41,10 +40,10 @@ export default {
       console.log(req)
       return user
     },
-    deleteUser: async (_, { _id }, { request: { req } }) => {
+    deleteUser: async (_, { _id }, { UserLoader, request: { req } }) => {
       // checkAuth(req)
       // checkAdmin(req)
-      const user = await User.findById(_id)
+      const user = await UserLoader.load(_id)
       await user.remove()
       return user
     }

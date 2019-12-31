@@ -1,6 +1,5 @@
 import Post from '../../models/post'
 import Tag from '../../models/tag'
-import User from '../../models/user'
 import { checkAuth, checkAdmin } from '../../utils/auth'
 import { validationPost } from '../../utils/validation'
 
