@@ -15,21 +15,22 @@ export default {
         // usado el cache de redis
         const post = await client.lrange(process.env.REDIS_CACHE_KEY, 0, -1)
         const postsCache = post.map(item => JSON.parse(item))
-        if (!postsCache) {
+        if (postsCache.length === 0) {
           // usando la DB
           const postDB = await Post.find().sort({ createdAt: -1 })
           console.log('mongo')
           return postDB
+        } else {
+          console.log('redis')
+          return postsCache
         }
-        console.log('redis')
-        return postsCache
       } catch (error) {
         return error
       }
     }
   },
   Mutation: {
-    createPost: async (_, { input }, { request: { req } }) => {
+    createPost: async (_, { input }, { UserLoader, request: { req } }) => {
       // checkAuth(req)
       const { title, slug, body, author, tags } = input
       const { error } = validationPost({ title, slug, body, author, tags })
@@ -44,26 +45,25 @@ export default {
         author,
         tags: tag
       })
-      const user = await User.findById(author)
-
+      const user = await UserLoader.load(author)
       await user.posts.push(post._id)
       await user.save()
 
       return post
     },
-    deletePost: async (_, { _id }, { request: { req, res } }) => {
+    deletePost: async (_, { _id }, { PostLoader, request: { req } }) => {
       checkAuth(req)
-      const post = await Post.findById({ _id })
+      const post = await PostLoader.load(_id)
       if (!post.author === req.session.userId) {
         console.log('no es mi post')
       }
       await post.remove()
       return post
     },
-    deletePosts: async (_, { _id }, { request: { req, res } }) => {
+    deletePosts: async (_, { _id }, { PostLoader, request: { req } }) => {
       checkAuth(req)
       checkAdmin(req)
-      const post = await Post.findById({ _id })
+      const post = await PostLoader.load(_id)
       await post.remove()
       return post
     }
