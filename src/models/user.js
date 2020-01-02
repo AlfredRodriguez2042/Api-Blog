@@ -55,7 +55,7 @@ userSchema.statics.doesntExist = async function validate(op) {
 //   foreignField: 'author'
 // })
 
-//userSchema.pre('save', passwordEncrypt)
+userSchema.pre('save', passwordEncrypt)
 
 userSchema.pre(/^find/, function(next) {
   this.populate({ path: 'comments' })

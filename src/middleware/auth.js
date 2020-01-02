@@ -57,3 +57,12 @@ export const middlewareSession = async (req, res, next) => {
     next(error)
   }
 }
+export const formatError = err => {
+  ///Don't give the specific errors to the client.
+  if (err.message.startsWith('Database Error: ')) {
+    return new Error('Internal server error')
+  }
+  // Otherwise return the original error.  The error can also
+  // be manipulated in other ways, so long as it's returned.
+  return err
+}

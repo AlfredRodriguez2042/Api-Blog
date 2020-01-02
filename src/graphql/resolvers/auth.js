@@ -21,8 +21,7 @@ export default {
       }
       req.session.userId = user._id
       const token = 'asdasdsa'
-      console.log(req.cookies)
-      console.log(req.session.cookie)
+
       return { user, token }
     }
   }

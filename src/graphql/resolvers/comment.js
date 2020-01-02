@@ -35,10 +35,14 @@ export default {
       })
       return comment
     },
-    likePost: async (_, { id }, { request: { req } }) => {
+    likePost: async (_, { id }, { PostLoader, request: { req } }) => {
       checkAuth(req)
-      const post = await Post.findById({ _id: id })
+      const post = await PostLoader.load(id)
 
+      //  const post = await Post.findById({ _id: id })
+      if (!post) {
+        throw new Error('post not exist')
+      }
       if (
         post.likes.find(
           like => like._id.toString() === req.session.userId.toString()
@@ -53,6 +57,7 @@ export default {
         post.likes.push(req.session.userId)
       }
       await post.save()
+      console.log(post)
       return post
     },
     likeComment: async (_, { _id }) => {

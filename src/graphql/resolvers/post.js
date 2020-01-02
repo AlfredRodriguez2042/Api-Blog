@@ -1,4 +1,5 @@
 import Post from '../../models/post'
+import User from '../../models/user'
 import Tag from '../../models/tag'
 import { checkAuth, checkAdmin } from '../../utils/auth'
 import { validationPost } from '../../utils/validation'
@@ -29,8 +30,8 @@ export default {
     }
   },
   Mutation: {
-    createPost: async (_, { input }, { UserLoader, request: { req } }) => {
-      // checkAuth(req)
+    createPost: async (_, { input }, { request: { req } }) => {
+      checkAuth(req)
       const { title, slug, body, author, tags } = input
       const { error } = validationPost({ title, slug, body, author, tags })
       if (error) {
@@ -44,32 +45,33 @@ export default {
         author,
         tags: tag
       })
-      const user = await UserLoader.load(author)
+      const user = await User.findById(author)
       await user.posts.push(post._id)
       await user.save()
 
       return post
     },
-    deletePost: async (_, { _id }, { PostLoader, request: { req } }) => {
+    deletePost: async (_, { _id }, { client, request: { req } }) => {
       checkAuth(req)
-      const post = await PostLoader.load(_id)
+      const post = await Post.findById(_id)
+
       if (!post.author === req.session.userId) {
         console.log('no es mi post')
       }
+      // delete in redis cache
       await post.remove()
       return post
     },
-    deletePosts: async (_, { _id }, { PostLoader, request: { req } }) => {
+    deletePosts: async (_, { _id }, { request: { req } }) => {
       checkAuth(req)
       checkAdmin(req)
-      const post = await PostLoader.load(_id)
+      const post = await Post.findById(_id)
       await post.remove()
       return post
     }
   },
   Post: {
     commentNum: parent => {
-      console.log(parent)
       return parent.comment.length
     },
     likesNum: parent => {

@@ -12,5 +12,6 @@ export const RedisCache = async model => {
   await client.del(process.env.REDIS_CACHE_KEY)
   const items = await model.find()
   const StringItems = items.map(item => JSON.stringify(item))
+
   return await client.lpush(process.env.REDIS_CACHE_KEY, ...StringItems)
 }

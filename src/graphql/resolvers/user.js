@@ -13,7 +13,7 @@ export default {
       return user
     },
     Users: async (_, __, { request: { req } }) => {
-      // checkAdmin(req)
+      checkAdmin(req)
       const users = await User.find({})
       //.populate('posts')
       // .populate('comments')
@@ -40,17 +40,21 @@ export default {
       console.log(req)
       return user
     },
-    deleteUser: async (_, { _id }, { UserLoader, request: { req } }) => {
-      // checkAuth(req)
-      // checkAdmin(req)
-      const user = await UserLoader.load(_id)
+    deleteUser: async (_, { _id }, { request: { req } }) => {
+      checkAuth(req)
+      checkAdmin(req)
+      const user = await User.findById(_id)
       await user.remove()
       return user
     }
   },
   User: {
     posts: async (parent, _, { PostLoader }) => {
-      return await PostLoader.load(parent.posts)
+      const db = await Post.find({ author: parent._id })
+      //  console.log('DB', db)
+      const loader = await PostLoader.loadMany(parent.posts)
+      console.log('loader', loader)
+      return db
     }
   }
 }
