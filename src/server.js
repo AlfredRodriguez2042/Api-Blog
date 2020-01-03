@@ -28,18 +28,19 @@ const corsOptions = {
   origin: 'http://localhost:8080'
 }
 // redirects should be ideally setup in reverse proxy like nignx
-//if (proces.env.NODE_ENV === 'production') {
-app.use('/*', httpsRedirect())
+if (process.env.NODE_ENV === 'production') {
+  console.log('production')
+  app.use('/*', httpsRedirect())
 
-app.get('/*', wwwRedirect())
+  app.get('/*', wwwRedirect())
 
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
-  })
-)
-// }
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100 // limit each IP to 100 requests per windowMs
+    })
+  )
+}
 
 app.use(
   session({
@@ -63,7 +64,7 @@ app.use(cookieParser(process.env.JWT_SECRET))
 
 export const apolloServer = new ApolloServer({
   schema,
-  introspection: true, // false to prod
+  introspection: process.env.NODE_ENV !== 'production',
   context: request => ({
     client,
     request,
@@ -71,11 +72,15 @@ export const apolloServer = new ApolloServer({
     UserLoader,
     PostLoader
   }),
-
+  validationRules: [
+    depthLimit(5),
+    costAnalyzer({
+      variables: {}, // req.body.variables,
+      maximumCost: 1000
+    })
+  ],
   formatError
 })
-
-//client.del(process.env.REDIS_CACHE_KEY)
 
 apolloServer.applyMiddleware({ app, path, cors: corsOptions })
 

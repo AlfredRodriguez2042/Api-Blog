@@ -4,7 +4,9 @@
   "description": "build a multiservice system",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js --exec babel-node",
+    "build": "babel src/index.js -d dist",
+    "start": " cross-env NODE_ENV=production nodemon src/index.js --exec babel-node",
+    "dev": "nodemon  src/index.js --exec babel-node ",
     "limit": "cross-env LIMIT=2048 increase-memory-limit"
   },
   "author": "Alfredo Rodriguez G.",
@@ -19,6 +21,7 @@
     "connect-redis": "^4.0.3",
     "cookie-parser": "^1.4.4",
     "cross-env": "^6.0.3",
+    "csurf": "^1.10.0",
     "dataloader": "^2.0.0",
     "dotenv": "^8.2.0",
     "express-rate-limit": "^5.0.0",

@@ -1,4 +1,4 @@
-## Node / Graphql / Mongodb / Posgrest / Redis / Apollo
+## Node / Graphql / Mongodb / Express / Redis / Apollo
 
 ![UI](/graphql.png?raw=true)
 
